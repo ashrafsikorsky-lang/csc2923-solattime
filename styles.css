@@ -1,0 +1,64 @@
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f4f7f6;
+    color: #222;
+}
+.nav-bar {
+    background-color: #004d40;
+    padding: 12px;
+    margin-bottom: 20px;
+}
+.nav-bar a {
+    color: white;
+    text-decoration: none;
+    margin-right: 20px;
+    font-weight: bold;
+}
+.section-box {
+    background-color: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+}
+h1, h3 {
+    color: #004d40;
+    margin-top: 0;
+}
+input, select, button {
+    padding: 7px;
+    margin: 5px 2px;
+}
+button {
+    background-color: #00695c;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #004d40;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+th, td {
+    border: 1px solid #bbb;
+    padding: 8px;
+    text-align: center;
+}
+th {
+    background-color: #00695c;
+    color: white;
+}
+#messageText, #crudFeedback {
+    font-weight: bold;
+}
+li {
+    background-color: #f9f9f9;
+    padding: 8px;
+    margin-bottom: 6px;
+    border: 1px solid #ddd;
+}

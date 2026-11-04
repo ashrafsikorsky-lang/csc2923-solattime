@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SolatTime - Activity Reminders</title>
+    <!-- Link to external CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="nav-bar">
+        <a href="index.html">1. Prayer Times</a>
+        <a href="reminders.html">2. Activity Reminders</a>
+    </div>
+
+    <h1>Religious Activity Reminders</h1>
+    <p id="crudFeedback"></p>
+
+    <div class="section-box">
+        <h3>Create New Activity Reminder</h3>
+        <select id="prayerCategory">
+            <option value="[Subuh]">Subuh</option>
+            <option value="[Dhuha]">Dhuha</option>
+            <option value="[Zohor]">Zohor</option>
+            <option value="[Asar]">Asar</option>
+            <option value="[Maghrib]">Maghrib</option>
+            <option value="[Isyak]">Isyak</option>
+        </select>
+        <input type="text" id="itemInput" placeholder="Enter religious activity" style="width: 280px;">
+        <button id="addButton">Add</button>
+    </div>
+
+    <div class="section-box">
+        <h3>My Saved Reminders</h3>
+        <ul id="itemList"></ul>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>
