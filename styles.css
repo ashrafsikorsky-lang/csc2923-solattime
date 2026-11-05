@@ -1,52 +1,88 @@
-/* styles.css */
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    background-color: #f4f7f6;
-    color: #222;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 30px;
+    background-color: #f0f4f3;
+    color: #333;
 }
+/* Improved Interactive Navbar */
 .nav-bar {
     background-color: #004d40;
-    padding: 12px;
-    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex;
+    gap: 10px;
 }
 .nav-bar a {
     color: white;
     text-decoration: none;
-    margin-right: 20px;
+    padding: 10px 20px;
+    border-radius: 8px;
     font-weight: bold;
+    transition: background-color 0.3s ease;
 }
+.nav-bar a:hover {
+    background-color: #00796b; /* Lighter green on hover */
+}
+.nav-bar a.active {
+    background-color: #00897b; /* Active page indicator */
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+}
+
+/* Modernized Section Boxes */
 .section-box {
     background-color: white;
-    padding: 15px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border: 1px solid #e0e0e0;
 }
 h1, h3 {
     color: #004d40;
     margin-top: 0;
 }
-input, select, button {
-    padding: 7px;
+
+/* Interactive Inputs & Buttons */
+input, select {
+    padding: 9px;
     margin: 5px 2px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+input:focus, select:focus {
+    border-color: #004d40;
 }
 button {
     background-color: #00695c;
     color: white;
     border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
     cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
 }
 button:hover {
     background-color: #004d40;
 }
+button:active {
+    transform: scale(0.98); /* Click shrink effect */
+}
+
+/* Rounded Table */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    margin-top: 15px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 th, td {
-    border: 1px solid #bbb;
-    padding: 8px;
+    border: 1px solid #eeeeee;
+    padding: 12px;
     text-align: center;
 }
 th {
@@ -56,9 +92,16 @@ th {
 #messageText, #crudFeedback {
     font-weight: bold;
 }
+
+/* Modern List Items for CRUD */
 li {
-    background-color: #f9f9f9;
-    padding: 8px;
-    margin-bottom: 6px;
-    border: 1px solid #ddd;
+    background-color: #fdfdfd;
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 1px solid #ececec;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+li button {
+    margin-left: 5px;
 }

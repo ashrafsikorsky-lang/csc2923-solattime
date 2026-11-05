@@ -10,13 +10,12 @@ const calcBox = document.getElementById('calcBox');
 const calcBtn = document.getElementById('calcBtn');
 const saveSuggestionBtn = document.getElementById('saveSuggestionBtn');
 
-// event 1: set default day to today's day of the month when first open
+// event 1: set default day
 document.addEventListener('DOMContentLoaded', () => {
     const today = new Date();
     dayInput.value = today.getDate();
 });
 
-// helper function: convert "06:01:00" into total minutes from midnight
 function timeToMinutes(timeStr) {
     const parts = timeStr.split(':');
     const hours = parseInt(parts[0]);
@@ -24,13 +23,12 @@ function timeToMinutes(timeStr) {
     return (hours * 60) + minutes;
 }
 
-// helper function: convert total minutes back into "HH:MM"
 function minutesToTime(totalMins) {
     if (totalMins < 0) {
         totalMins = totalMins + (24 * 60);
     }
     let hours = Math.floor(totalMins / 60);
-    let mins = totalMins % 60;
+    let mins = Math.floor(totalMins % 60);
 
     if (hours < 10) hours = '0' + hours;
     if (mins < 10) mins = '0' + mins;
@@ -38,12 +36,11 @@ function minutesToTime(totalMins) {
     return hours + ':' + mins;
 }
 
-// event 2: fetch Prayer Times when user clicks Get Prayer Times
+// event 2: fetch Prayer Times
 fetchBtn.addEventListener('click', () => {
     const zone = zoneDropdown.value;
     const day = parseInt(dayInput.value);
 
-    // error scenario 1: Invalid Input Validation
     if (zone === "" || isNaN(day) || day < 1 || day > 31) {
         messageText.style.color = "red";
         messageText.textContent = "Invalid Input: Please select a JAKIM Zone from the list and enter a valid day (1 to 31)";
@@ -55,13 +52,11 @@ fetchBtn.addEventListener('click', () => {
     messageText.style.color = "blue";
     messageText.textContent = "Loading prayer times...";
 
-    // fetch from Waktu Solat API (SOLAT V1 By Day)
     const apiUrl = `https://api.waktusolat.app/solat/${zone}/${day}`;
 
     fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
-            // error scenario 2: Empty Result (e.g. Day 31 on a 30-day month)
             if (!data || data.status !== "OK!" || !data.prayerTime) {
                 messageText.style.color = "red";
                 messageText.textContent = "No Results Found: No prayer data available for that day of the month.";
@@ -72,7 +67,6 @@ fetchBtn.addEventListener('click', () => {
 
             jakimData = data.prayerTime;
 
-            // DOM Manipulation: Display retrieved JSON fields
             document.getElementById('displayZone').textContent = data.zone;
             document.getElementById('displayDate').textContent = jakimData.date;
             document.getElementById('displayDay').textContent = jakimData.day;
@@ -87,7 +81,6 @@ fetchBtn.addEventListener('click', () => {
             document.getElementById('maghrib').textContent = jakimData.maghrib;
             document.getElementById('isha').textContent = jakimData.isha;
 
-            // run suggestion logic
             checkActivitySuggestion(jakimData);
 
             messageText.style.color = "green";
@@ -96,7 +89,6 @@ fetchBtn.addEventListener('click', () => {
             calcBox.style.display = "block";
         })
         .catch(error => {
-            // error scenario 3: failed API request
             messageText.style.color = "red";
             messageText.textContent = "Failed API Request: Could not connect to server (" + error.message + ")";
             scheduleBox.style.display = "none";
@@ -104,7 +96,7 @@ fetchBtn.addEventListener('click', () => {
         });
 });
 
-// suggestion logic using if...else comparing current time & prayer times
+// suggestion logic
 function checkActivitySuggestion(pt) {
     const now = new Date();
     const currentMins = (now.getHours() * 60) + now.getMinutes();
@@ -144,9 +136,8 @@ function checkActivitySuggestion(pt) {
     suggestionText.textContent = latestSuggestion;
 }
 
-// event 3: meaningful calculation (prep time + how many hours fasting)
+// event 3: Meaningful Calculation (Last 1/3 of the Night for Tahajjud)
 calcBtn.addEventListener('click', () => {
-    const selectedKey = document.getElementById('prayerSelect').value;
     const prepMinutes = parseInt(document.getElementById('prepInput').value);
     const calcOutput = document.getElementById('calcOutput');
 
@@ -156,36 +147,50 @@ calcBtn.addEventListener('click', () => {
         return;
     }
 
-    if (isNaN(prepMinutes) || prepMinutes < 1 || prepMinutes > 120) {
+    if (isNaN(prepMinutes) || prepMinutes < 0 || prepMinutes > 120) {
         calcOutput.style.color = "red";
-        calcOutput.textContent = "Invalid Input: Please enter preparation minutes between 1 and 120.";
+        calcOutput.textContent = "Invalid Input: Please enter preparation minutes between 0 and 120.";
         return;
     }
 
-    const selectedPrayerTime = jakimData[selectedKey];
-    const prayerMins = timeToMinutes(selectedPrayerTime);
-    const prepStartTime = minutesToTime(prayerMins - prepMinutes);
-
-    const fajrMins = timeToMinutes(jakimData.fajr);
+    // Mathematical Calculation: Maghrib to Fajr duration divided by 3
     const maghribMins = timeToMinutes(jakimData.maghrib);
-    const totalFastMins = maghribMins - fajrMins;
-    const fastHours = Math.floor(totalFastMins / 60);
-    const fastRemMins = totalFastMins % 60;
+    const fajrMins = timeToMinutes(jakimData.fajr);
+
+    // Total night duration across midnight (e.g. 19:30 to 06:00)
+    const nightDuration = ((24 * 60) - maghribMins) + fajrMins;
+    const oneThirdNight = nightDuration / 3;
+
+    // Start of the last third = Fajr minus one third
+    let lastThirdStartMins = fajrMins - oneThirdNight;
+    if (lastThirdStartMins < 0) {
+        lastThirdStartMins += (24 * 60); // handle if it falls before midnight
+    }
+
+    // Wake Up Time = Add user's prep time to the exact start
+    let wakeUpTime = lastThirdStartMins + prepMinutes;
+    if (wakeUpTime >= fajrMins) {
+        wakeUpTime = fajrMins - 15; // Prevent waking up after Subuh
+    }
 
     calcOutput.style.color = "#004d40";
-    calcOutput.textContent = `Preparation Time: Start getting ready at ${prepStartTime} (${prepMinutes} mins before ${selectedPrayerTime}). | Total Fasting Duration (Subuh to Maghrib): ${fastHours} hours ${fastRemMins} minutes.`;
+    calcOutput.textContent = `Result: The optimal Last 1/3 of the Night begins exactly at ${minutesToTime(lastThirdStartMins)}. With ${prepMinutes} minutes of preparation, your ideal wake-up time is ${minutesToTime(wakeUpTime)}.`;
 });
 
-// event 4: save suggestion into local storage
+// event 4: save suggestion into local storage with INLINE notification
 saveSuggestionBtn.addEventListener('click', () => {
-    if (!latestSuggestion) {
-        return;
-    }
+    if (!latestSuggestion) return;
 
     let items = JSON.parse(localStorage.getItem('solatReminders')) || [];
     items.push("[Suggested] " + latestSuggestion);
     localStorage.setItem('solatReminders', JSON.stringify(items));
 
-    messageText.style.color = "green";
-    messageText.textContent = "Saved suggestion to Local Storage! Click '2. Activity Reminders' to view it.";
+    // Show feedback right next to the button instead of the top message
+    const suggestionFeedback = document.getElementById('suggestionFeedback');
+    suggestionFeedback.textContent = "✓ Saved to Reminders!";
+    
+    // Automatically clear the message after 3 seconds
+    setTimeout(() => {
+        suggestionFeedback.textContent = "";
+    }, 3000);
 });
